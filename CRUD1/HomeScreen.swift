@@ -90,18 +90,21 @@ struct ModalAddInspectionView: View {
     @Environment(\.dismiss) var dismiss
     
     @State private var carName: String = ""
-    @State private var year: String = "2024"        // Tahun Mobil (sementara String, bisa diubah ke Int)
+    @State private var year: String = ""        // Tahun Mobil (sementara String, bisa diubah ke Int)
     @State private var kilometer: String = ""       // Kilometer mobil
     @State private var location: String = ""        // Lokasi inspeksi
     @State private var notes: String = ""           // Catatan tambahan
     @State private var selectedImage: UIImage?      // Foto yang dipilih
     @State private var showImagePicker = false      // Toggle untuk membuka Image Picker
     
+    // deklarasi status berikutnya
+    @State private var goToInspection = false
+    
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    HStack {
+                    HStack(alignment: .center, spacing: 12) {
                         Image(systemName: "car.fill")
                             .foregroundColor(.gray)
                         TextField("Nama Mobil", text: $carName)
@@ -113,41 +116,51 @@ struct ModalAddInspectionView: View {
                     HStack {
                         Image(systemName: "calendar")
                             .foregroundColor(.gray)
-                        Text(year)
+                        TextField("Tahun produksi", text: $year)
                             .font(.system(size: 16, weight: .semibold))
                         Spacer()
-                        Button(action: {
-                            
-                        }) {
-                            Image(systemName: "calendar.badge.plus")
-                                .foregroundColor(.blue)
-                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     Divider()
                     
                     // KILOMETER
-                    HStack {
+                    HStack(alignment: .center, spacing: 12) {
                         Image(systemName: "gauge")
                             .foregroundColor(.gray)
                         TextField("Kilometer", text: $kilometer)
                             .keyboardType(.numberPad)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     Divider()
                     
                     // INPUT LOKASI
-                    HStack(alignment: .top) {
-                        Image(systemName: "mappin.and.elilipse")
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "mappin.and.ellipse")
                             .foregroundColor(.gray)
                         TextField("Lokasi Inspeksi", text: $location)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Divider()
                     
                     // CATATAN TAMBAHAN
-                    TextEditor(text: $notes)
-                        .frame(height: 80)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "pencil.and.list.clipboard")
+                                .foregroundColor(.gray)
+                            Text("Tambahkan Catatan")
+                                .foregroundColor(.gray)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        TextEditor(text: $notes)
+                            .frame(height: 80)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            )
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
                     
                     // UPLOAD FOTO
                     VStack(alignment: .leading, spacing: 8) {
@@ -162,7 +175,7 @@ struct ModalAddInspectionView: View {
                             showImagePicker = true
                         }) {
                             HStack {
-                                Image(systemName: "square.and.arroe.up")
+                                Image(systemName: "square.and.arrow.up")
                                 Text("Upload")
                             }
                             .frame(maxWidth: .infinity)
@@ -179,10 +192,13 @@ struct ModalAddInspectionView: View {
                                 .cornerRadius(12)
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     // FOR SAVE
                     Button(action: {
                         print("add new Inspection: \(carName), \(kilometer), \(location), \(notes)")
+                        
+                        goToInspection = true
                     }) {
                         Text("Add")
                             .foregroundColor(.white)
@@ -194,15 +210,25 @@ struct ModalAddInspectionView: View {
                     .padding(.top, 20)
                 }
                 .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .navigationBarTitle("2025-08-25", displayMode: .inline)
-            .navigationBarItems(leading: Button("Batal") {
-                dismiss()
-            })
+            .navigationBarTitle("Tambahkan Data", displayMode: .inline)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Batal") {
+                        dismiss()
+                    }
+                }
+            }
             .sheet(isPresented: $showImagePicker) {
 //                ImagePicker(image: $selectedImage)
             }
+            .navigationDestination(isPresented: $goToInspection) {
+                CarInspectionView()
+            }
         }
+        .presentationDragIndicator(.visible)
     }
 }
 
@@ -213,8 +239,6 @@ struct ModalStepView: View {
     
     @State private var showModalAddInspection = false
 
-    
-    
     let steps: [InspectionStep] = [
         InspectionStep(number: 1, title: "Tambah Inspeksi Baru", description: "Tekan tombol di atas untuk memulai inspeksi mobil"),
         InspectionStep(number: 2, title: "Isikan Info Mobil", description: "Masukkan detail mobil seperti merk, model, tahun, dan informasi lainnya"),
@@ -224,7 +248,7 @@ struct ModalStepView: View {
     ]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack {
                     Text("Cara Kerja Inspeksi")
@@ -285,9 +309,11 @@ struct ModalStepView: View {
                     )
                 Text("Mulai Inspeksi")
                 }
-            .sheet(isPresented: $showModalAddInspection) {
+            .sheet(isPresented:
+                $showModalAddInspection) {
                 ModalAddInspectionView()
             }
+            .frame(maxWidth: .infinity)
         }
     }
 }
