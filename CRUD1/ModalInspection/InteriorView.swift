@@ -36,7 +36,12 @@ struct InteriorView: View {
         ),
         SubItem(title: "Atap",
                 description: "Periksa Dengan Teliti",
-                imageName: "car_set")
+                imageName: "car_set"
+        ),
+        SubItem(title: "anjay",
+                description: "Periksa Dengan Teliti",
+                imageName: "car_set"
+        ),
     ]
     
     var body: some View {

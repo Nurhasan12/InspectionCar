@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct InspectionStep: Identifiable {
     let id = UUID()
@@ -86,71 +87,217 @@ struct WelcomeView : View {
     }
 }
 
+//struct ModalAddInspectionView: View {
+//    @Environment(\.dismiss) var dismiss
+//    
+//    @State private var carName: String = ""
+//    @State private var year: String = ""        // Tahun Mobil (sementara String, bisa diubah ke Int)
+//    @State private var kilometer: String = ""       // Kilometer mobil
+//    @State private var location: String = ""        // Lokasi inspeksi
+//    @State private var notes: String = ""           // Catatan tambahan
+//    @State private var selectedImage: UIImage?      // Foto yang dipilih
+//    @State private var showImagePicker = false      // Toggle untuk membuka Image Picker
+//    
+//    // deklarasi status berikutnya
+//    @State private var goToInspection = false
+//    
+//    var body: some View {
+//        NavigationStack {
+//            ScrollView {
+//                VStack(alignment: .leading, spacing: 20) {
+//                    HStack(alignment: .center, spacing: 12) {
+//                        Image(systemName: "car.fill")
+//                            .foregroundColor(.gray)
+//                        TextField("Nama Mobil", text: $carName)
+//                            .textFieldStyle(PlainTextFieldStyle())
+//                    }
+//                    Divider()
+//                    
+//                    // TANGGAL
+//                    HStack {
+//                        Image(systemName: "calendar")
+//                            .foregroundColor(.gray)
+//                        TextField("Tahun produksi", text: $year)
+//                            .font(.system(size: 16, weight: .semibold))
+//                        Spacer()
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    Divider()
+//                    
+//                    // KILOMETER
+//                    HStack(alignment: .center, spacing: 12) {
+//                        Image(systemName: "gauge")
+//                            .foregroundColor(.gray)
+//                        TextField("Kilometer", text: $kilometer)
+//                            .keyboardType(.numberPad)
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    Divider()
+//                    
+//                    // INPUT LOKASI
+//                    HStack(alignment: .center, spacing: 12) {
+//                        Image(systemName: "mappin.and.ellipse")
+//                            .foregroundColor(.gray)
+//                        TextField("Lokasi Inspeksi", text: $location)
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    Divider()
+//                    
+//                    // CATATAN TAMBAHAN
+//                    VStack(alignment: .leading, spacing: 8) {
+//                        HStack {
+//                            Image(systemName: "pencil.and.list.clipboard")
+//                                .foregroundColor(.gray)
+//                            Text("Tambahkan Catatan")
+//                                .foregroundColor(.gray)
+//                        }
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        
+//                        TextEditor(text: $notes)
+//                            .frame(height: 80)
+//                            .overlay(
+//                                RoundedRectangle(cornerRadius: 8)
+//                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+//                            )
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    
+//                    
+//                    // UPLOAD FOTO
+//                    VStack(alignment: .leading, spacing: 8) {
+//                        HStack{
+//                            Image(systemName: "camera.fill")
+//                                .foregroundColor(.gray)
+//                            Text("Upload Foto")
+//                                .foregroundColor(.gray)
+//                        }
+//                        
+//                        Button(action: {
+//                            showImagePicker = true
+//                        }) {
+//                            HStack {
+//                                Image(systemName: "square.and.arrow.up")
+//                                Text("Upload")
+//                            }
+//                            .frame(maxWidth: .infinity)
+//                            .padding()
+//                            .background(Color.blue.opacity(0.2))
+//                            .cornerRadius(12)
+//                        }
+//                        
+//                        if let selectedImage = selectedImage {
+//                            Image(uiImage: selectedImage)
+//                                .resizable()
+//                                .scaledToFit()
+//                                .frame(height: 150)
+//                                .cornerRadius(12)
+//                        }
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    
+//                    // FOR SAVE
+//                    Button(action: {
+//                        print("add new Inspection: \(carName), \(kilometer), \(location), \(notes)")
+//                        
+//                        goToInspection = true
+//                    }) {
+//                        Text("Add")
+//                            .foregroundColor(.white)
+//                            .frame(maxWidth: .infinity)
+//                            .padding()
+//                            .background(Color.blue)
+//                            .cornerRadius(12)
+//                    }
+//                    .padding(.top, 20)
+//                }
+//                .padding()
+//                .frame(maxWidth: .infinity, alignment: .leading)
+//            }
+//            .navigationBarTitle("Tambahkan Data", displayMode: .inline)
+//            .navigationBarTitleDisplayMode(.inline)
+//            .toolbar {
+//                ToolbarItem(placement: .navigationBarLeading) {
+//                    Button("Batal") {
+//                        dismiss()
+//                    }
+//                }
+//            }
+//            .sheet(isPresented: $showImagePicker) {
+////                ImagePicker(image: $selectedImage)
+//            }
+//            .navigationDestination(isPresented: $goToInspection) {
+//                CarInspectionView()
+//            }
+//        }
+//        .presentationDragIndicator(.visible)
+//    }
+//}
+
+
 struct ModalAddInspectionView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
     
     @State private var carName: String = ""
-    @State private var year: String = ""        // Tahun Mobil (sementara String, bisa diubah ke Int)
-    @State private var kilometer: String = ""       // Kilometer mobil
-    @State private var location: String = ""        // Lokasi inspeksi
-    @State private var notes: String = ""           // Catatan tambahan
-    @State private var selectedImage: UIImage?      // Foto yang dipilih
-    @State private var showImagePicker = false      // Toggle untuk membuka Image Picker
+    @State private var year: String = ""
+    @State private var kilometer: String = ""
+    @State private var location: String = ""
+    @State private var notes: String = ""
     
-    // deklarasi status berikutnya
+    // --- Foto
+    @State private var selectedImage: UIImage?
+    @State private var showImagePicker = false
+    @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
+    @State private var showActionSheet = false
+    
     @State private var goToInspection = false
+    
+    @State private var savedCar: Car?
+
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    HStack(alignment: .center, spacing: 12) {
+                    
+                    // --- Nama Mobil
+                    HStack {
                         Image(systemName: "car.fill")
                             .foregroundColor(.gray)
                         TextField("Nama Mobil", text: $carName)
-                            .textFieldStyle(PlainTextFieldStyle())
                     }
                     Divider()
                     
-                    // TANGGAL
+                    // --- Tahun Produksi
                     HStack {
                         Image(systemName: "calendar")
                             .foregroundColor(.gray)
-                        TextField("Tahun produksi", text: $year)
-                            .font(.system(size: 16, weight: .semibold))
-                        Spacer()
+                        TextField("Tahun Produksi", text: $year)
+                            .keyboardType(.numberPad)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     Divider()
                     
-                    // KILOMETER
-                    HStack(alignment: .center, spacing: 12) {
+                    // --- Kilometer
+                    HStack {
                         Image(systemName: "gauge")
                             .foregroundColor(.gray)
                         TextField("Kilometer", text: $kilometer)
                             .keyboardType(.numberPad)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     Divider()
                     
-                    // INPUT LOKASI
-                    HStack(alignment: .center, spacing: 12) {
+                    // --- Lokasi Inspeksi
+                    HStack {
                         Image(systemName: "mappin.and.ellipse")
                             .foregroundColor(.gray)
                         TextField("Lokasi Inspeksi", text: $location)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     Divider()
                     
-                    // CATATAN TAMBAHAN
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Image(systemName: "pencil.and.list.clipboard")
-                                .foregroundColor(.gray)
-                            Text("Tambahkan Catatan")
-                                .foregroundColor(.gray)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    // --- Catatan
+                    VStack(alignment: .leading) {
+                        Label("Tambahkan Catatan", systemImage: "pencil.and.list.clipboard")
+                            .foregroundColor(.gray)
                         
                         TextEditor(text: $notes)
                             .frame(height: 80)
@@ -159,21 +306,15 @@ struct ModalAddInspectionView: View {
                                     .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                             )
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    
-                    // UPLOAD FOTO
+                    // --- Upload Foto
                     VStack(alignment: .leading, spacing: 8) {
-                        HStack{
-                            Image(systemName: "camera.fill")
-                                .foregroundColor(.gray)
-                            Text("Upload Foto")
-                                .foregroundColor(.gray)
-                        }
+                        Label("Upload Foto", systemImage: "camera.fill")
+                            .foregroundColor(.gray)
                         
-                        Button(action: {
-                            showImagePicker = true
-                        }) {
+                        Button {
+                            showActionSheet = true
+                        } label: {
                             HStack {
                                 Image(systemName: "square.and.arrow.up")
                                 Text("Upload")
@@ -192,14 +333,9 @@ struct ModalAddInspectionView: View {
                                 .cornerRadius(12)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    // FOR SAVE
-                    Button(action: {
-                        print("add new Inspection: \(carName), \(kilometer), \(location), \(notes)")
-                        
-                        goToInspection = true
-                    }) {
+                    // --- Tombol Save
+                    Button(action: saveCar) {
                         Text("Add")
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -210,27 +346,67 @@ struct ModalAddInspectionView: View {
                     .padding(.top, 20)
                 }
                 .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .navigationBarTitle("Tambahkan Data", displayMode: .inline)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Tambahkan Data")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Batal") {
-                        dismiss()
-                    }
+                    Button("Batal") { dismiss() }
                 }
             }
             .sheet(isPresented: $showImagePicker) {
-//                ImagePicker(image: $selectedImage)
+                ImagePicker(image: $selectedImage, sourceType: sourceType)
+            }
+            .confirmationDialog("Pilih Sumber Foto", isPresented: $showActionSheet, titleVisibility: .visible) {
+                Button("Kamera") {
+                    sourceType = .camera
+                    showImagePicker = true
+                }
+                Button("Galeri") {
+                    sourceType = .photoLibrary
+                    showImagePicker = true
+                }
+                Button("Batal", role: .cancel) {}
             }
             .navigationDestination(isPresented: $goToInspection) {
-                CarInspectionView()
+                if let car = savedCar {
+                    CarInspectionView(car: car)
+                }
             }
+
         }
-        .presentationDragIndicator(.visible)
+    }
+    
+    // MARK: - Save ke Core Data
+    private func saveCar() {
+        let newCar = Car(context: viewContext)
+        newCar.id = UUID()
+        newCar.namaMobil = carName
+        newCar.tahunProduksi = Int16(year) ?? 0
+        newCar.kilometer = Int32(kilometer) ?? 0
+        newCar.lokasiInspeksi = location
+        newCar.catatan = notes
+        
+        savedCar = newCar
+        goToInspection = true
+
+        
+        if let image = selectedImage,
+           let imageData = image.jpegData(compressionQuality: 0.8) {
+            newCar.foto = imageData
+        }
+        
+        do {
+            try viewContext.save()
+            print("✅ Data mobil berhasil disimpan")
+            goToInspection = true
+        } catch {
+            print("❌ Gagal menyimpan: \(error.localizedDescription)")
+        }
     }
 }
+
+
+
 
 
 //View Modal step

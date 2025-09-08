@@ -116,7 +116,6 @@ struct SubAccordionView: View {
 }
 
 // MARK: - Preview
-// MARK: - Preview
 struct SubAccordionView_Previews: PreviewProvider {
     static var previews: some View {
         SubAccordionView(
