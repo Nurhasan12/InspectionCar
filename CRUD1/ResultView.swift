@@ -107,6 +107,51 @@ struct ResultView: View {
                     )
                     .cornerRadius(10)
                     .shadow(radius: 5)
+                    
+                    VStack {
+                        HStack {
+                            Image(systemName: "eye")
+                                .resizable()
+                                .frame(width: 15, height: 10)
+                            Text("Interior")
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text("8/10")
+                                .fontWeight(.bold)
+                        }
+                        .padding(5)
+                        .background(Color.gray)
+                        .cornerRadius(10)
+                        
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Jok Mobil")
+                                    .font(.subheadline)
+                                HStack {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .resizable()
+                                        .frame(width: 10, height: 10)
+                                    Text("Ini eror")
+                                        .font(.caption2)
+                                        .foregroundStyle(.red)
+                                }
+                                
+                            }
+                            Spacer()
+                            HStack {
+                                Image(systemName: "checkmark.circle")
+                                    .resizable()
+                                    .frame(width: 10, height: 10)
+                                Text("baik")
+                                    .font(.subheadline)
+                            }
+                            .padding(4)
+                            .background(Color.green)
+                            .cornerRadius(35)
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .background(Color.blue.opacity(0.1))
                 }
                 .padding()
             }
