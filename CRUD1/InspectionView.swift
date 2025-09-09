@@ -171,12 +171,39 @@ struct CarInspectionView: View {
                     .fontWeight(.bold)
                 
                 // --- Tahun Produksi
-                Text("\(car.tahunProduksi)")
+                Text(car.catatan ?? " ")
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
             
-            VStack(alignment: .leading, spacing: 40) {
+            HStack {
+                VStack {
+                    Text(car.tahunProduksi ?? "0")
+                        .foregroundStyle(.blue)
+                    Text("Tahun")
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                }
+                .padding(.horizontal, 25)
+                VStack {
+                    Text("\(car.kilometer)")
+                        .foregroundStyle(.blue)
+                    Text("Kilometer")
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                }
+                .padding(.horizontal, 25)
+                VStack {
+                    Text(car.lokasiInspeksi ?? " ")
+                        .foregroundStyle(.blue)
+                    Text("Lokasi")
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                }
+                .padding(.horizontal, 25)
+            }
+            
+            VStack(spacing: 40) {
                 HStack(spacing: 80) {
                     // Exterior button
                     Button(action: {
@@ -282,10 +309,10 @@ struct CarInspectionView_Previews: PreviewProvider {
         let context = PersistenceController.preview.container.viewContext
         let dummyCar = Car(context: context)
         dummyCar.namaMobil = "BMW I5"
-        dummyCar.tahunProduksi = 2020
+        dummyCar.tahunProduksi = "2020"
         dummyCar.kilometer = 50000
         dummyCar.lokasiInspeksi = "Jakarta"
-        dummyCar.catatan = "Oke"
+        dummyCar.catatan = "Catatan disini ges"
         
         return CarInspectionView(car: dummyCar)
     }

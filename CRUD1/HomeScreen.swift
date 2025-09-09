@@ -381,7 +381,7 @@ struct ModalAddInspectionView: View {
         let newCar = Car(context: viewContext)
         newCar.id = UUID()
         newCar.namaMobil = carName
-        newCar.tahunProduksi = Int16(year) ?? 0
+        newCar.tahunProduksi = year
         newCar.kilometer = Int32(kilometer) ?? 0
         newCar.lokasiInspeksi = location
         newCar.catatan = notes

@@ -7,7 +7,7 @@
         <attribute name="kilometer" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="lokasiInspeksi" optional="YES" attributeType="String"/>
         <attribute name="namaMobil" optional="YES" attributeType="String"/>
-        <attribute name="tahunProduksi" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="tahunProduksi" optional="YES" attributeType="String"/>
         <relationship name="result" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="InspectionResult" inverseName="car" inverseEntity="InspectionResult"/>
     </entity>
     <entity name="InspectionResult" representedClassName="InspectionResult" syncable="YES" codeGenerationType="class">
